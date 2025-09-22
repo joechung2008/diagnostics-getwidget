@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        flutter-version: [3.35.4]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Use Flutter ${{ matrix.flutter-version }}
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ matrix.flutter-version }}
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test --coverage
+
+      - name: Install lcov
+        run: sudo apt-get update && sudo apt-get install -y lcov
+
+      - name: Generate coverage report
+        run: genhtml coverage/lcov.info -o coverage/html
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-${{ matrix.flutter-version }}
+          path: |
+            coverage/lcov.info
+            coverage/html/
+          if-no-files-found: ignore
