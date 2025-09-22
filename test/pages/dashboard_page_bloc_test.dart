@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:diagnostics_getwidget/pages/dashboard_page_bloc.dart';
-import 'package:diagnostics_getwidget/bloc/dashboard_bloc.dart';
 import 'package:diagnostics_getwidget/models.dart';
 import 'package:diagnostics_getwidget/services.dart';
 
