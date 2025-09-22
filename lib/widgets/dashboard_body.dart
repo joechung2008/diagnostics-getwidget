@@ -55,6 +55,10 @@ class DashboardBody extends StatelessWidget {
         GFTabBar(
           controller: tabController,
           length: 3,
+          tabBarColor: Theme.of(context).colorScheme.surface,
+          indicatorColor: Theme.of(context).colorScheme.primary,
+          labelColor: Theme.of(context).colorScheme.primary,
+          unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withAlpha(178),
           tabs: [
             Tab(icon: Icon(Icons.apps), text: 'Extensions'),
             Tab(icon: Icon(Icons.build), text: 'Build Info'),
