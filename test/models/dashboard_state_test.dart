@@ -80,5 +80,21 @@ void main() {
         throwsNoSuchMethodError,
       );
     });
+
+    test(
+      'copyWith should allow clearing selectedExtension with explicit null',
+      () {
+        final extension = ExtensionInfo(extensionName: 'ext1');
+        final originalState = DashboardState(selectedExtension: extension);
+
+        // verify it was set
+        expect(originalState.selectedExtension, isNotNull);
+        expect(originalState.selectedExtension!.extensionName, 'ext1');
+
+        // clear using copyWith explicit null and verify cleared
+        final cleared = originalState.copyWith(selectedExtension: null);
+        expect(cleared.selectedExtension, isNull);
+      },
+    );
   });
 }

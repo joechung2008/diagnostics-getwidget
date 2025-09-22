@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models.dart';
 
+const _copyWithSentinel = Object();
+
 @immutable
 class DashboardState {
   const DashboardState({
@@ -21,18 +23,24 @@ class DashboardState {
 
   DashboardState copyWith({
     Environment? selectedEnvironment,
-    Diagnostics? diagnostics,
+    Object? diagnostics = _copyWithSentinel,
     bool? isLoading,
-    String? error,
-    ExtensionInfo? selectedExtension,
+    Object? error = _copyWithSentinel,
+    Object? selectedExtension = _copyWithSentinel,
     bool? showExtensionsList,
   }) {
     return DashboardState(
       selectedEnvironment: selectedEnvironment ?? this.selectedEnvironment,
-      diagnostics: diagnostics ?? this.diagnostics,
+      diagnostics: identical(diagnostics, _copyWithSentinel)
+          ? this.diagnostics
+          : diagnostics as Diagnostics?,
       isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
-      selectedExtension: selectedExtension ?? this.selectedExtension,
+      error: identical(error, _copyWithSentinel)
+          ? this.error
+          : error as String?,
+      selectedExtension: identical(selectedExtension, _copyWithSentinel)
+          ? this.selectedExtension
+          : selectedExtension as ExtensionInfo?,
       showExtensionsList: showExtensionsList ?? this.showExtensionsList,
     );
   }
