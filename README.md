@@ -13,6 +13,7 @@ This Flutter application provides a diagnostics dashboard for Azure Portal exten
 - **Build and server information**: Comprehensive system diagnostics
 - **Responsive design**: Works on desktop and mobile devices
 - **Modern architecture**: Multiple state management implementations available
+ - **Modern architecture**: Riverpod for state management
 
 ## Developer Workflow
 
@@ -59,10 +60,9 @@ flutter run -d chrome
 
 ```
 lib/
-├── bloc/                    # Bloc state management implementation
 ├── controllers/             # Riverpod controllers
 ├── models/                  # Data models and state classes
-├── pages/                   # Page widgets (Bloc and Riverpod versions)
+├── pages/                   # Page widgets (Riverpod versions)
 ├── services/                # API services
 └── widgets/                 # Reusable UI components
 ```
@@ -75,7 +75,6 @@ This project includes comprehensive unit and widget tests to ensure code quality
 
 ```
 test/
-├── bloc/                    # Bloc implementation tests
 ├── controllers/             # Riverpod controller tests
 ├── models/                  # Data model tests
 ├── pages/                   # Page widget tests
@@ -150,35 +149,7 @@ The primary implementation uses **Riverpod** for reactive state management with 
 
 **Documentation:** [Riverpod Documentation](https://riverpod.dev/)
 
-### Bloc Implementation
-
-An alternative implementation using the **Bloc** pattern for event-driven state management.
-
-**Key Features:**
-
-- Clear separation of events and states
-- Predictable state transitions
-- Excellent for complex business logic
-- Strong testing capabilities
-
-**Files:**
-
-- `lib/pages/dashboard_page_bloc.dart` - Main dashboard page
-- `lib/bloc/dashboard_bloc.dart` - Bloc implementation
-
-**Documentation:** [Bloc Documentation](https://bloclibrary.dev/)
-
-### Switching Between Implementations
-
-To switch between Riverpod and Bloc implementations, update the home widget in `lib/widgets/app.dart`:
-
-```dart
-// For Riverpod (default)
-home: const DashboardPage(),
-
-// For Bloc
-home: const DashboardPageBloc(),
-```
+This project uses Riverpod exclusively for state management. Use `lib/pages/dashboard_page_riverpod.dart` and the controllers under `lib/controllers/` for business logic and state.
 
 ## UI Components
 
