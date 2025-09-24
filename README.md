@@ -2,18 +2,13 @@
 
 Azure Portal Extensions Dashboard implemented in Flutter with GetWidget
 
-## Overview
-
-This Flutter application provides a diagnostics dashboard for Azure Portal extensions, featuring modern state management patterns and a clean, responsive UI built with GetWidget components.
-
 ## Features
 
 - **Multi-environment support**: Public Cloud, Fairfax, and Mooncake
 - **Extension diagnostics**: View extension information, configuration, and stage definitions
 - **Build and server information**: Comprehensive system diagnostics
 - **Responsive design**: Works on desktop and mobile devices
-- **Modern architecture**: Multiple state management implementations available
- - **Modern architecture**: Riverpod for state management
+- **State management**: Riverpod (Notifier / NotifierProvider)
 
 ## Developer Workflow
 
@@ -27,7 +22,7 @@ This Flutter application provides a diagnostics dashboard for Azure Portal exten
 1. **Clone the repository**
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/joechung2008/diagnostics-getwidget.git
 cd diagnostics-getwidget
 ```
 
@@ -62,14 +57,14 @@ flutter run -d chrome
 lib/
 ├── controllers/             # Riverpod controllers
 ├── models/                  # Data models and state classes
-├── pages/                   # Page widgets (Riverpod versions)
+├── pages/                   # Page widgets
 ├── services/                # API services
 └── widgets/                 # Reusable UI components
 ```
 
 ## Testing
 
-This project includes comprehensive unit and widget tests to ensure code quality and reliability.
+This project includes unit and widget tests to ensure code quality and reliability.
 
 ### Test Structure
 
@@ -84,14 +79,7 @@ test/
 
 ### Mocking with Mocktail
 
-The project uses **Mocktail** for creating mocks in tests, providing a modern and type-safe mocking solution.
-
-**Key Features:**
-
-- Type-safe mock generation
-- Easy setup and verification
-- Support for async operations
-- Integration with Flutter's testing framework
+The project uses **Mocktail** for creating mocks in tests.
 
 **Example Usage:**
 
@@ -128,18 +116,7 @@ flutter test test/models/dashboard_state_test.dart
 
 ## Architecture
 
-This project demonstrates two modern Flutter state management approaches:
-
-### Riverpod Implementation
-
-The primary implementation uses **Riverpod** for reactive state management with dependency injection.
-
-**Key Features:**
-
-- Declarative state management with providers
-- Automatic dependency injection
-- Excellent testability and reusability
-- Less boilerplate than traditional approaches
+The project uses **Riverpod** (Notifier / NotifierProvider) for reactive state management with dependency injection.
 
 **Files:**
 
@@ -147,9 +124,7 @@ The primary implementation uses **Riverpod** for reactive state management with 
 - `lib/controllers/dashboard_controller.dart` - Business logic controller
 - `lib/models/dashboard_state.dart` - Shared state model
 
-**Documentation:** [Riverpod Documentation](https://riverpod.dev/)
-
-This project uses Riverpod exclusively for state management. Use `lib/pages/dashboard_page_riverpod.dart` and the controllers under `lib/controllers/` for business logic and state.
+**Note:** This repository was migrated to Riverpod 3.x; tests commonly use `ProviderContainer` to override providers during testing.
 
 ## UI Components
 

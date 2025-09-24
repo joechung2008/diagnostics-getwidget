@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:diagnostics_getwidget/controllers/dashboard_controller.dart';
 import 'package:diagnostics_getwidget/models.dart';
@@ -8,17 +9,26 @@ import 'package:diagnostics_getwidget/services.dart';
 class MockDiagnosticsService extends Mock implements DiagnosticsService {}
 
 void main() {
-  late DashboardController dashboardController;
+  late ProviderContainer container;
   late MockDiagnosticsService mockDiagnosticsService;
 
   setUp(() {
     mockDiagnosticsService = MockDiagnosticsService();
-    dashboardController = DashboardController(mockDiagnosticsService);
+    container = ProviderContainer(
+      overrides: [
+        diagnosticsServiceProvider.overrideWithValue(mockDiagnosticsService),
+      ],
+    );
+  });
+
+  tearDown(() {
+    container.dispose();
   });
 
   group('DashboardController', () {
     test('initial state should be DashboardState()', () {
-      expect(dashboardController.state, const DashboardState());
+      final state = container.read(dashboardControllerProvider);
+      expect(state, const DashboardState());
     });
 
     group('loadDiagnostics', () {
@@ -44,13 +54,16 @@ void main() {
           ).thenAnswer((_) async => diagnostics);
 
           // Act
-          await dashboardController.loadDiagnostics();
+          await container
+              .read(dashboardControllerProvider.notifier)
+              .loadDiagnostics();
 
           // Assert
-          expect(dashboardController.state.isLoading, false);
-          expect(dashboardController.state.diagnostics, diagnostics);
-          expect(dashboardController.state.selectedExtension, null);
-          expect(dashboardController.state.error, null);
+          final state = container.read(dashboardControllerProvider);
+          expect(state.isLoading, false);
+          expect(state.diagnostics, diagnostics);
+          expect(state.selectedExtension, null);
+          expect(state.error, null);
 
           verify(
             () => mockDiagnosticsService.fetchDiagnostics(Environment.public),
@@ -68,12 +81,15 @@ void main() {
           ).thenThrow(Exception(errorMessage));
 
           // Act
-          await dashboardController.loadDiagnostics();
+          await container
+              .read(dashboardControllerProvider.notifier)
+              .loadDiagnostics();
 
           // Assert
-          expect(dashboardController.state.isLoading, false);
-          expect(dashboardController.state.error, 'Exception: $errorMessage');
-          expect(dashboardController.state.diagnostics, null);
+          final state = container.read(dashboardControllerProvider);
+          expect(state.isLoading, false);
+          expect(state.error, 'Exception: $errorMessage');
+          expect(state.diagnostics, null);
 
           verify(
             () => mockDiagnosticsService.fetchDiagnostics(Environment.public),
@@ -103,19 +119,30 @@ void main() {
         ).thenAnswer((_) async => diagnostics);
 
         // Act
-        dashboardController.setEnvironment(Environment.fairfax);
+        container
+            .read(dashboardControllerProvider.notifier)
+            .setEnvironment(Environment.fairfax);
 
         // Assert - wait for async operation
         await Future.delayed(Duration.zero);
 
         expect(
-          dashboardController.state.selectedEnvironment,
+          container.read(dashboardControllerProvider).selectedEnvironment,
           Environment.fairfax,
         );
-        expect(dashboardController.state.selectedExtension, null);
-        expect(dashboardController.state.showExtensionsList, true);
-        expect(dashboardController.state.diagnostics, diagnostics);
-        expect(dashboardController.state.isLoading, false);
+        expect(
+          container.read(dashboardControllerProvider).selectedExtension,
+          null,
+        );
+        expect(
+          container.read(dashboardControllerProvider).showExtensionsList,
+          true,
+        );
+        expect(
+          container.read(dashboardControllerProvider).diagnostics,
+          diagnostics,
+        );
+        expect(container.read(dashboardControllerProvider).isLoading, false);
 
         verify(
           () => mockDiagnosticsService.fetchDiagnostics(Environment.fairfax),
@@ -124,10 +151,15 @@ void main() {
 
       test('should not change state if environment is null', () {
         // Act
-        dashboardController.setEnvironment(null);
+        container
+            .read(dashboardControllerProvider.notifier)
+            .setEnvironment(null);
 
         // Assert
-        expect(dashboardController.state, const DashboardState());
+        expect(
+          container.read(dashboardControllerProvider),
+          const DashboardState(),
+        );
       });
     });
 
@@ -137,32 +169,52 @@ void main() {
         final extension = ExtensionInfo(extensionName: 'test-extension');
 
         // Act
-        dashboardController.selectExtension(extension);
+        container
+            .read(dashboardControllerProvider.notifier)
+            .selectExtension(extension);
 
         // Assert
-        expect(dashboardController.state.selectedExtension, extension);
+        expect(
+          container.read(dashboardControllerProvider).selectedExtension,
+          extension,
+        );
       });
     });
 
     group('toggleExtensionsList', () {
       test('should toggle showExtensionsList from true to false', () {
         // Act
-        dashboardController.toggleExtensionsList();
+        container
+            .read(dashboardControllerProvider.notifier)
+            .toggleExtensionsList();
 
         // Assert
-        expect(dashboardController.state.showExtensionsList, false);
+        expect(
+          container.read(dashboardControllerProvider).showExtensionsList,
+          false,
+        );
       });
 
       test('should toggle showExtensionsList from false to true', () {
         // Arrange
-        dashboardController.toggleExtensionsList(); // Set to false
-        expect(dashboardController.state.showExtensionsList, false);
+        container
+            .read(dashboardControllerProvider.notifier)
+            .toggleExtensionsList(); // Set to false
+        expect(
+          container.read(dashboardControllerProvider).showExtensionsList,
+          false,
+        );
 
         // Act
-        dashboardController.toggleExtensionsList();
+        container
+            .read(dashboardControllerProvider.notifier)
+            .toggleExtensionsList();
 
         // Assert
-        expect(dashboardController.state.showExtensionsList, true);
+        expect(
+          container.read(dashboardControllerProvider).showExtensionsList,
+          true,
+        );
       });
     });
 
@@ -187,14 +239,19 @@ void main() {
           );
 
           // Set diagnostics first
-          dashboardController.state = DashboardState(diagnostics: diagnostics);
+          container
+              .read(dashboardControllerProvider.notifier)
+              .setDiagnosticsForTesting(diagnostics);
 
           // Act
-          dashboardController.handleShortcut('test-extension');
+          container
+              .read(dashboardControllerProvider.notifier)
+              .handleShortcut('test-extension');
 
           // Assert
-          expect(dashboardController.state.selectedExtension, extensionInfo);
-          expect(dashboardController.state.showExtensionsList, false);
+          final state = container.read(dashboardControllerProvider);
+          expect(state.selectedExtension, extensionInfo);
+          expect(state.showExtensionsList, false);
         },
       );
 
@@ -214,14 +271,19 @@ void main() {
         );
 
         // Set diagnostics first
-        dashboardController.state = DashboardState(diagnostics: diagnostics);
+        container
+            .read(dashboardControllerProvider.notifier)
+            .setDiagnosticsForTesting(diagnostics);
 
         // Act
-        dashboardController.handleShortcut('non-existent');
+        container
+            .read(dashboardControllerProvider.notifier)
+            .handleShortcut('non-existent');
 
         // Assert
-        expect(dashboardController.state.selectedExtension, null);
-        expect(dashboardController.state.showExtensionsList, true); // default
+        final state = container.read(dashboardControllerProvider);
+        expect(state.selectedExtension, null);
+        expect(state.showExtensionsList, true); // default
       });
 
       test('should do nothing when extension exists but is not info', () {
@@ -243,14 +305,19 @@ void main() {
         );
 
         // Set diagnostics first
-        dashboardController.state = DashboardState(diagnostics: diagnostics);
+        container
+            .read(dashboardControllerProvider.notifier)
+            .setDiagnosticsForTesting(diagnostics);
 
         // Act
-        dashboardController.handleShortcut('test-extension');
+        container
+            .read(dashboardControllerProvider.notifier)
+            .handleShortcut('test-extension');
 
         // Assert
-        expect(dashboardController.state.selectedExtension, null);
-        expect(dashboardController.state.showExtensionsList, true);
+        final state = container.read(dashboardControllerProvider);
+        expect(state.selectedExtension, null);
+        expect(state.showExtensionsList, true);
       });
     });
   });

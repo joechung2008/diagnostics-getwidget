@@ -3,10 +3,14 @@ import '../models.dart';
 import '../services.dart';
 
 // Controller that manages dashboard state and business logic
-class DashboardController extends StateNotifier<DashboardState> {
-  final DiagnosticsService _diagnosticsService;
+class DashboardController extends Notifier<DashboardState> {
+  late final DiagnosticsService _diagnosticsService;
 
-  DashboardController(this._diagnosticsService) : super(const DashboardState());
+  @override
+  DashboardState build() {
+    _diagnosticsService = ref.watch(diagnosticsServiceProvider);
+    return const DashboardState();
+  }
 
   Future<void> loadDiagnostics() async {
     state = state.copyWith(isLoading: true, error: null);
@@ -54,6 +58,10 @@ class DashboardController extends StateNotifier<DashboardState> {
       }
     }
   }
+
+  void setDiagnosticsForTesting(Diagnostics diagnostics) {
+    state = state.copyWith(diagnostics: diagnostics);
+  }
 }
 
 // Provider for the diagnostics service
@@ -63,7 +71,6 @@ final diagnosticsServiceProvider = Provider<DiagnosticsService>((ref) {
 
 // Provider for the dashboard controller
 final dashboardControllerProvider =
-    StateNotifierProvider<DashboardController, DashboardState>((ref) {
-      final diagnosticsService = ref.watch(diagnosticsServiceProvider);
-      return DashboardController(diagnosticsService);
+    NotifierProvider<DashboardController, DashboardState>(() {
+      return DashboardController();
     });
