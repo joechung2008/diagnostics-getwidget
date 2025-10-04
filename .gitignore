@@ -29,6 +29,26 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Flutter generated files
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/ios/**/GeneratedPluginRegistrant.h
+**/ios/**/GeneratedPluginRegistrant.m
+**/macos/**/Flutter/GeneratedPluginRegistrant.swift
+**/windows/**/flutter/generated_plugin_registrant.cc
+**/windows/**/flutter/generated_plugin_registrant.h
+**/windows/**/flutter/generated_plugins.cmake
+**/windows/**/flutter/CMakeLists.txt
+**/linux/**/flutter/generated_plugin_registrant.cc
+**/linux/**/flutter/generated_plugin_registrant.h
+**/linux/**/flutter/generated_plugins.cmake
+**/linux/**/flutter/CMakeLists.txt
+
 # Symbolication related
 app.*.symbols
 
